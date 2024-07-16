@@ -7,19 +7,98 @@ public class GitHubRepo {
 
     // Basic Information
     private String fullName;
+
+    public String getSubscribers_count() {
+        return subscribers_count;
+    }
+
+    public void setSubscribers_count(String subscribers_count) {
+        this.subscribers_count = subscribers_count;
+    }
+
+    public String getNetwork_count() {
+        return network_count;
+    }
+
+    public void setNetwork_count(String network_count) {
+        this.network_count = network_count;
+    }
+
+    private String subscribers_count;
+
+    private String network_count;
+
     private String description;
     private String language;
-    private String createdAt;
-    private String updatedAt;
-    private String pushedAt;
-    private int size;
+    private String created_at;
+    private String updated_at;
 
+    public String getCreated_at() {
+        return created_at;
+    }
+
+    public void setCreated_at(String created_at) {
+        this.created_at = created_at;
+    }
+
+    public String getUpdated_at() {
+        return updated_at;
+    }
+
+    public void setUpdated_at(String updated_at) {
+        this.updated_at = updated_at;
+    }
+
+    public String getPushed_at() {
+        return pushed_at;
+    }
+
+    public void setPushed_at(String pushed_at) {
+        this.pushed_at = pushed_at;
+    }
+
+    public int getForks_count() {
+        return forks_count;
+    }
+
+    public void setForks_count(int forks_count) {
+        this.forks_count = forks_count;
+    }
+
+    public int getWatchers_count() {
+        return watchers_count;
+    }
+
+    public void setWatchers_count(int watchers_count) {
+        this.watchers_count = watchers_count;
+    }
+
+    public int getOpen_issues_count() {
+        return open_issues_count;
+    }
+
+    public void setOpen_issues_count(int open_issues_count) {
+        this.open_issues_count = open_issues_count;
+    }
+
+    private String pushed_at;
+    private int size;
 
     // Counts
     private int stargazersCount;
-    private int forksCount;
-    private int watchersCount;
-    private int openIssuesCount;
+    private int forks_count;
+    private int watchers_count;
+    private int open_issues_count;
+
+    public License getLicense() {
+        return license;
+    }
+
+    public void setLicense(License license) {
+        this.license = license;
+    }
+
+    private License license;
 
     // Commit Activity
     private int totalCommits;
@@ -84,29 +163,7 @@ public class GitHubRepo {
         this.language = language;
     }
 
-    public String getCreatedAt() {
-        return createdAt;
-    }
 
-    public void setCreatedAt(String createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public String getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(String updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
-    public String getPushedAt() {
-        return pushedAt;
-    }
-
-    public void setPushedAt(String pushedAt) {
-        this.pushedAt = pushedAt;
-    }
 
     public int getSize() {
         return size;
@@ -126,29 +183,9 @@ public class GitHubRepo {
         this.stargazersCount = stargazersCount;
     }
 
-    public int getForksCount() {
-        return forksCount;
-    }
 
-    public void setForksCount(int forksCount) {
-        this.forksCount = forksCount;
-    }
 
-    public int getWatchersCount() {
-        return watchersCount;
-    }
 
-    public void setWatchersCount(int watchersCount) {
-        this.watchersCount = watchersCount;
-    }
-
-    public int getOpenIssuesCount() {
-        return openIssuesCount;
-    }
-
-    public void setOpenIssuesCount(int openIssuesCount) {
-        this.openIssuesCount = openIssuesCount;
-    }
 
     public int getTotalCommits() {
         return totalCommits;

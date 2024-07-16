@@ -13,6 +13,7 @@ import org.springframework.web.client.RestTemplate;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -41,11 +42,19 @@ public class GitHubService {
         // Fetch basic information
         String repoUrl = String.format("%s/repos/%s/%s", githubApiUrl, owner, repoName);
         ResponseEntity<GitHubRepo> response = restTemplate.getForEntity(repoUrl, GitHubRepo.class);
+
+
         if (response.getStatusCode() == HttpStatus.OK) {
             repo = response.getBody();
         }
 
         // Additional information
+        repo.setCreated_at(Objects.requireNonNull(response.getBody()).getCreated_at());
+        repo.setNetwork_count(response.getBody().getNetwork_count());
+        repo.setSubscribers_count(response.getBody().getSubscribers_count());
+        repo.setPushed_at(response.getBody().getPushed_at());
+        repo.setUpdated_at(response.getBody().getUpdated_at());
+        repo.setOpen_issues_count(response.getBody().getOpen_issues_count());
         repo.setTotalCommits(fetchTotalCommits(owner, repoName));
         repo.setPullRequests(fetchPullRequests(owner, repoName));
         repo.setIssues(fetchIssues(owner, repoName));
@@ -55,11 +64,12 @@ public class GitHubService {
         repo.setBranches(fetchBranches(owner, repoName));
         repo.setTags(fetchTags(owner, repoName));
         repo.setTopics(fetchTopics(owner, repoName));
-      //  repo.setCodeFrequency(fetchCodeFrequency(owner, repoName));
-        repo.setContributorStats(fetchContributorStats(owner, repoName));
-        repo.setParticipation(fetchParticipation(owner, repoName));
-      //  repo.setClones(fetchClones(owner, repoName));
-     //   repo.setViews(fetchViews(owner, repoName));
+        repo.setLicense(repo.getLicense());
+        repo.setCodeFrequency(repo.getCodeFrequency());
+        repo.setContributorStats(repo.getContributorStats());
+        repo.setParticipation(repo.getParticipation());
+        repo.setClones(repo.getClones());
+        repo.setViews(repo.getViews());
 
         return repo;
     }
@@ -68,7 +78,7 @@ public class GitHubService {
         String url = String.format("%s/repos/%s/%s/stats/commit_activity", githubApiUrl, owner, repoName);
         ResponseEntity<List<CommitActivity>> response = restTemplate.exchange(url, HttpMethod.GET, null, new ParameterizedTypeReference<List<CommitActivity>>() {});
         if (response.getStatusCode() == HttpStatus.OK) {
-            return response.getBody().stream().mapToInt(CommitActivity::getTotalCommits).sum();
+            return Objects.requireNonNull(response.getBody()).size();
         }
         return 0;
     }
@@ -159,14 +169,15 @@ public class GitHubService {
         return List.of();
     }
 
-  /*  private List<CodeFrequency> fetchCodeFrequency(String owner, String repoName) {
+   private List<CodeFrequency> fetchCodeFrequency(String owner, String repoName) {
         String url = String.format("%s/repos/%s/%s/stats/code_frequency", githubApiUrl, owner, repoName);
-        ResponseEntity<List<CodeFrequency>> response = restTemplate.exchange(url, HttpMethod.GET, null, new ParameterizedTypeReference<List<CodeFrequency>>() {});
+        ResponseEntity<List<CodeFrequency>> response = restTemplate.exchange(url, HttpMethod.GET, null, new ParameterizedTypeReference<>() {
+        });
         if (response.getStatusCode() == HttpStatus.OK) {
             return response.getBody();
         }
         return List.of();
-    }*/
+    }
 
     private List<ContributorStats> fetchContributorStats(String owner, String repoName) {
         String url = String.format("%s/repos/%s/%s/stats/contributors", githubApiUrl, owner, repoName);
@@ -202,5 +213,14 @@ public class GitHubService {
             return response.getBody();
         }
         return new Traffic();
+    }
+
+    private License fetchLicense(String owner, String repoName) {
+        String url = String.format("%s/repos/%s/%s/traffic/views", githubApiUrl, owner, repoName);
+        ResponseEntity<License> response = restTemplate.getForEntity(url, License.class);
+        if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
+            return response.getBody();
+        }
+        return new License();
     }
 }

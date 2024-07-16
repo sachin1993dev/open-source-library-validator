@@ -27,9 +27,9 @@ public class ExcelReportService {
 
         // Create header row
         String[] headers = {"Owner", "Repository", "Description", "Language", "Created At", "Updated At", "Pushed At", "Size", "License",
-                            "Stars", "Forks", "Watchers", "Open Issues", "Total Commits", "Open PRs", "Closed PRs", "Merged PRs",
-                            "Issues", "Contributors", "Releases", "ReadMe", "Branches", "Tags", "Topics", "Code Frequency",
-                            "Contributor Stats", "Commit Counts", "Clones", "Views"};
+                "Stars", "Forks", "Watchers", "Open Issues", "Total Commits", "Open PRs", "Closed PRs", "Merged PRs",
+                "Issues", "Contributors", "Releases", "ReadMe", "Branches", "Tags", "Topics", "Code Frequency",
+                "Contributor Stats", "Commit Counts", "Clones", "Views", "network_count", "subscribers_count"};
         Row headerRow = sheet.createRow(0);
         for (int i = 0; i < headers.length; i++) {
             Cell cell = headerRow.createCell(i);
@@ -45,31 +45,82 @@ public class ExcelReportService {
             row.createCell(1).setCellValue(repo.getFullName());
             row.createCell(2).setCellValue(repo.getDescription());
             row.createCell(3).setCellValue(repo.getLanguage());
-            row.createCell(4).setCellValue(repo.getCreatedAt());
-            row.createCell(5).setCellValue(repo.getUpdatedAt());
-            row.createCell(6).setCellValue(repo.getPushedAt());
+            row.createCell(4).setCellValue(repo.getCreated_at());
+            row.createCell(5).setCellValue(repo.getUpdated_at());
+            row.createCell(6).setCellValue(repo.getPushed_at());
             row.createCell(7).setCellValue(repo.getSize());
-           // row.createCell(8).setCellValue(repo.getLicense());
+            row.createCell(8).setCellValue(repo.getLicense().getName());
             row.createCell(9).setCellValue(repo.getStargazersCount());
-            row.createCell(10).setCellValue(repo.getForksCount());
-            row.createCell(11).setCellValue(repo.getWatchersCount());
-            row.createCell(12).setCellValue(repo.getOpenIssuesCount());
+            row.createCell(10).setCellValue(repo.getForks_count());
+            row.createCell(11).setCellValue(repo.getWatchers_count());
+            row.createCell(12).setCellValue(repo.getOpen_issues_count());
             row.createCell(13).setCellValue(repo.getTotalCommits());
             row.createCell(14).setCellValue(repo.getPullRequests().get("open"));
             row.createCell(15).setCellValue(repo.getPullRequests().get("closed"));
             row.createCell(16).setCellValue(repo.getPullRequests().get("merged"));
-            row.createCell(17).setCellValue(repo.getIssues().size());
-            row.createCell(18).setCellValue(repo.getContributors().size());
-            row.createCell(19).setCellValue(repo.getReleases().size());
+
+            if(null!=repo.getIssues()) {
+                row.createCell(17).setCellValue(repo.getIssues().size());
+            }
+
+
+
+            if(null!=repo.getContributors()) {
+                row.createCell(18).setCellValue(repo.getContributors().size());
+            }
+            if(null!=repo.getContributors()) {
+                row.createCell(19).setCellValue(repo.getContributors().size());
+            }
+
+
             row.createCell(20).setCellValue(repo.getReadmeContent());
-            row.createCell(21).setCellValue(repo.getBranches().size());
-            row.createCell(22).setCellValue(repo.getTags().size());
-            row.createCell(23).setCellValue(repo.getTopics().size());
-//            row.createCell(24).setCellValue(repo.getCodeFrequency().size());
-            row.createCell(25).setCellValue(repo.getContributorStats().size());
-      //      row.createCell(26).setCellValue((Date) repo.getParticipation().getAll());
-//            row.createCell(27).setCellValue(repo.getClones().getCount());
-//            row.createCell(28).setCellValue(repo.getViews().getCount());
+
+            if(null!=repo.getBranches()) {
+                row.createCell(21).setCellValue(repo.getBranches().size());
+            }
+
+            if(null!=repo.getTags()) {
+                row.createCell(22).setCellValue(repo.getTags().size());
+            }
+
+            if(null!=repo.getTopics()) {
+                row.createCell(23).setCellValue(repo.getTopics().size());
+
+            }
+
+
+
+            if(null!=repo.getCodeFrequency()) {
+                row.createCell(24).setCellValue(repo.getCodeFrequency().size());
+            }
+
+
+                row.createCell(26).setCellValue(repo.getTotalCommits());
+
+
+
+
+            if(null!=repo.getClones()) {
+                row.createCell(27).setCellValue(repo.getClones().getCount());
+            }
+
+            if(null!=repo.getViews()) {
+                row.createCell(28).setCellValue(repo.getViews().getCount());
+            }
+            if(null!=repo.getSubscribers_count()) {
+                row.createCell(29).setCellValue(repo.getSubscribers_count());
+            }
+            if(null!=repo.getNetwork_count()) {
+                row.createCell(30).setCellValue(repo.getNetwork_count());
+            }
+
+
+
+
+
+
+
+
         }
 
         // Write the output to a byte array
