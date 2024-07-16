@@ -2,7 +2,7 @@ package com.skv.library.validator.serviceImpl;
 
 import com.skv.library.validator.config.ThresholdsProperties;
 import com.skv.library.validator.model.*;
-import com.skv.library.validator.service.GitHubService;
+import com.skv.library.validator.service.GitHubService1;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -10,7 +10,7 @@ import org.springframework.web.client.RestTemplate;
 import java.util.Arrays;
 
 @Service
-public class GitHubServiceImpl implements GitHubService {
+public class GitHubServiceImpl implements GitHubService1 {
 
     private final RestTemplate restTemplate;
     private final ThresholdsProperties thresholds;
