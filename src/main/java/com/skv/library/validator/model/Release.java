@@ -1,19 +1,18 @@
 package com.skv.library.validator.model;
 
 public class Release {
-
-    private String tagName;
+    private String tag_name;
     private String name;
-    private String createdAt;
+    private String body;
 
     // Getters and setters
 
     public String getTagName() {
-        return tagName;
+        return tag_name;
     }
 
-    public void setTagName(String tagName) {
-        this.tagName = tagName;
+    public void setTagName(String tag_name) {
+        this.tag_name = tag_name;
     }
 
     public String getName() {
@@ -24,11 +23,11 @@ public class Release {
         this.name = name;
     }
 
-    public String getCreatedAt() {
-        return createdAt;
+    public String getBody() {
+        return body;
     }
 
-    public void setCreatedAt(String createdAt) {
-        this.createdAt = createdAt;
+    public void setBody(String body) {
+        this.body = body;
     }
 }

@@ -6,7 +6,28 @@ import java.util.Map;
 public class GitHubRepo {
 
     // Basic Information
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    private String name;
     private String fullName;
+
+    public Release getRelease() {
+        return release;
+    }
+
+    public void setRelease(Release release) {
+        this.release = release;
+    }
+
+    private Release release;
+
 
     public String getSubscribers_count() {
         return subscribers_count;
@@ -32,6 +53,25 @@ public class GitHubRepo {
     private String language;
     private String created_at;
     private String updated_at;
+
+    public String getHas_issues() {
+        return has_issues;
+    }
+
+    public void setHas_issues(String has_issues) {
+        this.has_issues = has_issues;
+    }
+
+    private String has_issues;
+    public String getHas_wiki() {
+        return has_wiki;
+    }
+
+    public void setHas_wiki(String has_wiki) {
+        this.has_wiki = has_wiki;
+    }
+
+    private String has_wiki;
 
     public String getCreated_at() {
         return created_at;

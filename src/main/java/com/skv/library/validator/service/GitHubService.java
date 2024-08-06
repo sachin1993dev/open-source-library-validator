@@ -10,10 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -64,13 +61,13 @@ public class GitHubService {
         repo.setBranches(fetchBranches(owner, repoName));
         repo.setTags(fetchTags(owner, repoName));
         repo.setTopics(fetchTopics(owner, repoName));
-        repo.setLicense(repo.getLicense());
+        repo.setLicense(getLicenseWithSpdx(repo.getLicense().getSpdx_id(),repo.getLicense()));
         repo.setCodeFrequency(repo.getCodeFrequency());
         repo.setContributorStats(repo.getContributorStats());
         repo.setParticipation(repo.getParticipation());
         repo.setClones(repo.getClones());
         repo.setViews(repo.getViews());
-
+        repo.setRelease(getLatestRelease(owner,repoName));
         return repo;
     }
 
@@ -83,6 +80,10 @@ public class GitHubService {
         return 0;
     }
 
+    public Release getLatestRelease(String owner, String repo) {
+        String url = String.format("%s/repos/%s/%s/releases/latest", githubApiUrl,owner, repo);
+        return this.restTemplate.getForObject(url, Release.class);
+    }
     private Map<String, Integer> fetchPullRequests(String owner, String repoName) {
         String url = String.format("%s/repos/%s/%s/pulls?state=all", githubApiUrl, owner, repoName);
         ResponseEntity<List<PullRequest>> response = restTemplate.exchange(url, HttpMethod.GET, null, new ParameterizedTypeReference<List<PullRequest>>() {});
@@ -136,7 +137,8 @@ public class GitHubService {
         String url = String.format("%s/repos/%s/%s/readme", githubApiUrl, owner, repoName);
         ResponseEntity<ReadMe> response = restTemplate.exchange(url, HttpMethod.GET, null, ReadMe.class);
         if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
-            return response.getBody().getContent();
+            String encoded = response.getBody().getContent();
+            return new String( Base64.getDecoder().decode(encoded.replace("\n", "").replace("\r", "")));
         }
         return "";
     }
@@ -223,4 +225,22 @@ public class GitHubService {
         }
         return new License();
     }
+
+    // SPDX License Model
+
+    public License getLicenseWithSpdx(String spdxId,License license) {
+        spdxId = "LGPL-2.1-only";
+        String spdxUrl = "https://spdx.org/licenses/" + spdxId + ".json";
+        SpdxLicense spdxLicense = restTemplate.getForObject(spdxUrl, SpdxLicense.class);
+
+        if (spdxLicense != null) {
+            // Combine SPDX data with GitHub License data
+            license.setOsiApproved(spdxLicense.isOsiApproved());
+            license.setFsfLibre(spdxLicense.isFsfLibre());
+            license.setDeprecatedLicenseId(spdxLicense.isDeprecatedLicenseId());
+        }
+
+        return license;
+    }
+
 }

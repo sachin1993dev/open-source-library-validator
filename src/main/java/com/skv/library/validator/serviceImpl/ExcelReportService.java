@@ -1,7 +1,9 @@
 package com.skv.library.validator.serviceImpl;
 
 import com.skv.library.validator.model.GitHubRepo;
+import com.skv.library.validator.model.RepositoryMetrics;
 import com.skv.library.validator.service.GitHubService;
+import com.skv.library.validator.service.ReportService;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -20,6 +23,9 @@ public class ExcelReportService {
 
     @Autowired
     private GitHubService gitHubService;
+
+    @Autowired
+    private ReportService reportService;
 
     public byte[] generateReport(List<String> owners, List<String> repoNames) throws IOException {
         Workbook workbook = new XSSFWorkbook();
@@ -29,7 +35,7 @@ public class ExcelReportService {
         String[] headers = {"Owner", "Repository", "Description", "Language", "Created At", "Updated At", "Pushed At", "Size", "License",
                 "Stars", "Forks", "Watchers", "Open Issues", "Total Commits", "Open PRs", "Closed PRs", "Merged PRs",
                 "Issues", "Contributors", "Releases", "ReadMe", "Branches", "Tags", "Topics", "Code Frequency",
-                "Contributor Stats", "Commit Counts", "Clones", "Views", "network_count", "subscribers_count"};
+                "Contributor Stats", "Commit Counts", "Clones", "Views", "network_count", "subscribers_count","Latest_release"};
         Row headerRow = sheet.createRow(0);
         for (int i = 0; i < headers.length; i++) {
             Cell cell = headerRow.createCell(i);
@@ -63,15 +69,13 @@ public class ExcelReportService {
                 row.createCell(17).setCellValue(repo.getIssues().size());
             }
 
-
-
             if(null!=repo.getContributors()) {
                 row.createCell(18).setCellValue(repo.getContributors().size());
             }
+
             if(null!=repo.getContributors()) {
                 row.createCell(19).setCellValue(repo.getContributors().size());
             }
-
 
             row.createCell(20).setCellValue(repo.getReadmeContent());
 
@@ -88,16 +92,11 @@ public class ExcelReportService {
 
             }
 
-
-
             if(null!=repo.getCodeFrequency()) {
                 row.createCell(24).setCellValue(repo.getCodeFrequency().size());
             }
 
-
-                row.createCell(26).setCellValue(repo.getTotalCommits());
-
-
+            row.createCell(26).setCellValue(repo.getTotalCommits());
 
 
             if(null!=repo.getClones()) {
@@ -114,12 +113,9 @@ public class ExcelReportService {
                 row.createCell(30).setCellValue(repo.getNetwork_count());
             }
 
-
-
-
-
-
-
+            if(null!=repo.getRelease()) {
+                row.createCell(31).setCellValue(repo.getRelease().getName());
+            }
 
         }
 
@@ -131,6 +127,96 @@ public class ExcelReportService {
             workbook.write(fos);
         }
 
+
+        workbook.close();
+        return bos.toByteArray();
+    }
+
+    public byte[] generateReportClassification(String owners, String repoNames) throws IOException {
+        Workbook workbook = new XSSFWorkbook();
+        Sheet sheet = workbook.createSheet("GitHub Repositories");
+
+        Row headerRow = sheet.createRow(0);
+        String[] headers = {"Community", "Legal", "Meta","Reliability","Portability","Usability", "Security"};
+        for (int i = 0; i < headers.length; i++) {
+            headerRow.createCell(i).setCellValue(headers[i]);
+        }
+
+        RepositoryMetrics repo = reportService.getRepositoryMetrics(owners,repoNames);
+
+        GitHubRepo repo1 = gitHubService.fetchRepositoryInfo(owners, repoNames);
+
+        Row dataRow = sheet.createRow(1);
+
+        dataRow.createCell(0).setCellValue(
+                String.format("Stars: %d%nForks: %d%nSubscriber: %s%nWatchers: %d",
+                        repo.getStargazersCount(),
+                        repo.getForksCount(),
+                        repo1.getSubscribers_count(),
+                        repo.getWatchersCount())
+        );
+
+        dataRow.createCell(1).setCellValue(
+                String.format("License Type: %s%nLicense Name: %s%nOsiApproved: %s%nFsfLibre: %s%nIsDeprecatedLicenseId: %s",
+                        repo.getLicense(),
+                        repo.getNameLicense(),
+                        repo.getSpdxLicense().isOsiApproved(),
+                        repo.getSpdxLicense().isFsfLibre(),
+                        repo.getSpdxLicense().isDeprecatedLicenseId())
+        );
+
+        dataRow.createCell(2).setCellValue(
+                String.format("Owner: %s%nName: %s%nDescription: %s%nTopics: %s%nAPI URL: %s",
+                        repo.getOwner(),
+                        repo.getName(),
+                        repo.getDescription(),
+                        Arrays.toString(repo.getTopics()),
+                        repo.getApiUrl())
+        );
+
+        dataRow.createCell(3).setCellValue(
+                String.format("Age: %s%nAverage Time to Release: " +
+                                "%s%nLast Updated: %s%nCreated AT: " +
+                                "%s%nActive/Recent Releases: " +
+                                "%s%nCommit Activity: %s%nCommit Maturity: " +
+                                "%s%nCommit Evolution: %s",
+                        repo.getAge(),
+                        repo.getAverageTimeToRelease(),
+                        repo.getLastUpdated(),
+                        repo1.getCreated_at(),
+                       repo.getActiveRecentReleases(),
+                       repo.getCommitActivity(),
+                        repo.getCommitMaturity(),
+                        repo.getCommitEvolution())
+        );
+
+        dataRow.createCell(4).setCellValue(
+                String.format("Language: %s",
+                        repo.getLanguage())
+        );
+
+        dataRow.createCell(5).setCellValue( String.format("Wiki: %s%nDocumentation: %s%n",
+                repo.getWiki(),
+                repo1.getReadmeContent()));
+
+        dataRow.createCell(6).setCellValue(String.format("Closed Issues: %s%n",
+                repo.getClosedIssues()));
+
+        // Adjust the row heights and column widths to fit content
+        sheet.autoSizeColumn(0);
+        sheet.autoSizeColumn(1);
+        sheet.autoSizeColumn(2);
+        sheet.autoSizeColumn(3);
+        sheet.autoSizeColumn(4);
+        sheet.autoSizeColumn(5);
+        sheet.autoSizeColumn(6);
+
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        workbook.write(bos);
+
+        try (FileOutputStream fos = new FileOutputStream("C:/Users/91990/report_v1.xlsx")) {
+            workbook.write(fos);
+        }
 
         workbook.close();
         return bos.toByteArray();

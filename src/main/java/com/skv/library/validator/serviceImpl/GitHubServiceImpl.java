@@ -44,7 +44,7 @@ public class GitHubServiceImpl implements GitHubService1 {
 
         // Check if the repository meets the criteria using thresholds
         boolean hasRecentActivity = repoInfo.getLastCommitDate() != null && !repoInfo.getLastCommitDate().isEmpty();
-        boolean hasLicense = repoInfo.getLicense() != null && repoInfo.getLicense().getSpdxId()!=null &&  !repoInfo.getLicense().getSpdxId().isEmpty();
+        boolean hasLicense = repoInfo.getLicense() != null && repoInfo.getLicense().getSpdx_id()!=null &&  !repoInfo.getLicense().getSpdx_id().isEmpty();
         boolean hasDocumentation = hasDocumentation(owner, repo);
 
         return stars >= thresholds.getStar() &&

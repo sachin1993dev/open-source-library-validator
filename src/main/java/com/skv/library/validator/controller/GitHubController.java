@@ -54,4 +54,21 @@ public class GitHubController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
+
+    @GetMapping("/api/report/v2")
+    public ResponseEntity<byte[]> generateExcelReportV2(
+            @RequestParam String owners,
+            @RequestParam String repoNames) {
+        try {
+            byte[] report = excelReportService.generateReportClassification(owners, repoNames);
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Content-Disposition", "attachment; filename=report.xlsx");
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .body(report);
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
 }
