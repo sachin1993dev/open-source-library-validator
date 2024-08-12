@@ -57,10 +57,10 @@ public class ExcelServiceV2 {
 
         // Updated metrics data: removed "License Type" from the "Community" section
         String[][] metricsData = {
-                {"Owner", "Name", "Description", "Topics", "API URL","Recent release version"},
+                {"Owner", "Name", "Description",  "API URL","Topics","Recent release version"},
                 {"Stars", "Forks", "Subscribers", "Watchers"}, // Community metrics
                 {"License Type", "License Name", "OsiApproved", "FsfLibre", "IsDeprecatedLicenseId"},  // Legal metrics
-                {"Age", "Last updated", "Created At", "Release count"},  // Reliability metrics
+                {"Age", "Created At","Last updated","Release count"},  // Reliability metrics
                 {"Language"},  // Portability metrics
                 {"Wiki","has_downloads","Documentation"},  // Usability metrics
                 {"Total open Issue count","Issue count By Labels","Issue count By Assignees","Issue count By Date","Issue count By Comments"}  // Security metrics
@@ -91,7 +91,7 @@ public class ExcelServiceV2 {
         CellStyle dataStyle = workbook.createCellStyle();
         dataStyle.setAlignment(HorizontalAlignment.CENTER);
         dataStyle.setVerticalAlignment(VerticalAlignment.CENTER);
-      //  dataStyle.setWrapText(true);
+        //dataStyle.setWrapText(true);
 
         Row parentHeaderRow = sheet.createRow(0);
         Row childMetricsRow = sheet.createRow(1);
@@ -155,7 +155,8 @@ public class ExcelServiceV2 {
                 cell5.setCellStyle(dataStyle);
 
                 Cell cell6 = valueRow.createCell(5);
-                cell6.setCellValue(repository.getLatestRelease().getTagName());
+                cell6.setCellValue(null!=repository.getLatestRelease() ? repository.getLatestRelease().getTagName(): "0");
+
                 cell6.setCellStyle(dataStyle);
 
                 Cell cell8 = valueRow.createCell(7);
@@ -185,25 +186,69 @@ public class ExcelServiceV2 {
                 String licenseType = repository.getLicense().getKey();
 
                 SpdxLicense spdxLicense = null;
-
+                Cell cell16 = valueRow.createCell(14);
+                Cell cell17 = valueRow.createCell(15);
+                Cell cell18 = valueRow.createCell(16);
                 try {
                     if (null != licenseType && !licenseType.isBlank()) {
                         String spdxUrl = "https://spdx.org/licenses/" + licenseType.toUpperCase() + ".json";
                         spdxLicense = restTemplate.getForObject(spdxUrl, SpdxLicense.class);
 
-                        Cell cell16 = valueRow.createCell(14);
+
                         cell16.setCellValue(spdxLicense.isOsiApproved());
-                        cell16.setCellStyle(dataStyle);
+                        if(spdxLicense.isOsiApproved()==false) {
+                            CellStyle dataStyle1 = workbook.createCellStyle();
+                            dataStyle1.setAlignment(HorizontalAlignment.CENTER);
+                            dataStyle1.setVerticalAlignment(VerticalAlignment.CENTER);
+                            dataStyle1.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+                            dataStyle1.setFillForegroundColor(IndexedColors.RED.getIndex());
+                            cell16.setCellStyle(dataStyle1);
+                        } else {
+                            cell16.setCellStyle(dataStyle);
+                        }
 
-                        Cell cell17 = valueRow.createCell(15);
+
+
                         cell17.setCellValue(spdxLicense.isFsfLibre());
-                        cell17.setCellStyle(dataStyle);
+                        if(spdxLicense.isFsfLibre()==false) {
+                            CellStyle dataStyle1 = workbook.createCellStyle();
+                            dataStyle1.setAlignment(HorizontalAlignment.CENTER);
+                            dataStyle1.setVerticalAlignment(VerticalAlignment.CENTER);
+                            dataStyle1.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+                            dataStyle1.setFillForegroundColor(IndexedColors.RED.getIndex());
+                            cell17.setCellStyle(dataStyle1);
+                        } else {
+                            cell17.setCellStyle(dataStyle);
+                        }
 
-                        Cell cell18 = valueRow.createCell(16);
+
+
                         cell18.setCellValue(spdxLicense.isDeprecatedLicenseId());
-                        cell18.setCellStyle(dataStyle);
+                        if(spdxLicense.isDeprecatedLicenseId()==true) {
+                            CellStyle dataStyle1 = workbook.createCellStyle();
+                            dataStyle1.setAlignment(HorizontalAlignment.CENTER);
+                            dataStyle1.setVerticalAlignment(VerticalAlignment.CENTER);
+                            dataStyle1.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+                            dataStyle1.setFillForegroundColor(IndexedColors.YELLOW.getIndex());
+                            cell18.setCellStyle(dataStyle1);
+                        } else {
+                            cell18.setCellStyle(dataStyle);
+                        }
+
+
                     }
                 } catch (Exception e) {
+                    CellStyle dataStyle11 = workbook.createCellStyle();
+                    dataStyle11.setAlignment(HorizontalAlignment.CENTER);
+                    dataStyle11.setVerticalAlignment(VerticalAlignment.CENTER);
+                    dataStyle11.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+                    dataStyle11.setFillForegroundColor(IndexedColors.RED.getIndex());
+                    cell16.setCellValue("NA");
+                    cell16.setCellStyle(dataStyle11);
+                    cell17.setCellValue("NA");
+                    cell17.setCellStyle(dataStyle11);
+                    cell18.setCellValue("NA");
+                    cell18.setCellStyle(dataStyle11);
 
                 }
 
@@ -309,7 +354,7 @@ public class ExcelServiceV2 {
             sheet.autoSizeColumn(i);
         }
 
-        try (FileOutputStream fos = new FileOutputStream("C:/Users/91990/report_new.xlsx")) {
+        try (FileOutputStream fos = new FileOutputStream("C:/Users/91990/OSS_Metrics.xlsx")) {
             workbook.write(fos);
         }
 
