@@ -2,6 +2,7 @@ package com.skv.library.validator.controller;
 
 
 import com.skv.library.validator.service.ExcelServiceV1;
+import com.skv.library.validator.service.ExcelServiceV2;
 import com.skv.library.validator.service.GitHubService1;
 import com.skv.library.validator.service.GitHubServiceV1;
 import com.skv.library.validator.serviceImpl.ExcelReportService;
@@ -28,6 +29,9 @@ public class GitHubController {
 
     @Autowired
     public ExcelServiceV1 excelServiceV1;
+
+    @Autowired
+    private ExcelServiceV2 excelServiceV2;
 
     private final ExcelReportService excelReportService;
     @Autowired
@@ -102,4 +106,15 @@ public class GitHubController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
+    @GetMapping("/report")
+    public String generateReport( @RequestParam List<String> owners,
+                                  @RequestParam List<String> repoNames) throws IOException {
+
+        excelServiceV2.generateXLSX(owners,repoNames);
+
+        return "Success";
+    }
+
+
 }
