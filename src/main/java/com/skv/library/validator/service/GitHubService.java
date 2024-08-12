@@ -28,7 +28,7 @@ public class GitHubService {
         }));
     }
 
-    @Value("${github.api.url}")
+    @Value("${github.token}")
     private String githubApiUrl;
 
 
@@ -45,7 +45,7 @@ public class GitHubService {
             repo = response.getBody();
         }
 
-        // Additional information
+        // Additional informationf
         repo.setCreated_at(Objects.requireNonNull(response.getBody()).getCreated_at());
         repo.setNetwork_count(response.getBody().getNetwork_count());
         repo.setSubscribers_count(response.getBody().getSubscribers_count());

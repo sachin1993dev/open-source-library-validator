@@ -1,6 +1,9 @@
 package com.skv.library.validator.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class Release {
+    @JsonProperty("tag_name")
     private String tag_name;
     private String name;
     private String body;

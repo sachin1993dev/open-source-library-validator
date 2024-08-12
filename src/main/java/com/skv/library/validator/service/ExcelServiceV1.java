@@ -16,7 +16,7 @@ public class ExcelServiceV1 {
 
     public ByteArrayInputStream generateExcelReport(Map<String, Object> metrics) throws IOException {
         try (Workbook workbook = new XSSFWorkbook(); ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-            Sheet sheet = workbook.createSheet("GitHub Metrics");
+            Sheet sheet = workbook.createSheet("OSS Parameters");
 
             // Define parent headers and their associated metrics
             String[] parentHeaders = {
@@ -31,13 +31,13 @@ public class ExcelServiceV1 {
 
             // Updated metrics data: removed "License Type" from the "Community" section
             String[][] metricsData = {
-                    {"Stars", "Forks", "Subscriber", "Watchers"},  // Community metrics
+                    {"Stars", "Forks", "Subscribers", "Watchers"},  // Community metrics
                     {"License Type", "License Name", "OsiApproved", "FsfLibre", "IsDeprecatedLicenseId"},  // Legal metrics
-                    {"Owner", "Name", "Description", "Topics", "API URL"},  // Meta metrics
-                    {"Age", "Last updated", "Created At", "Recent Release", "Language"},  // Reliability metrics
+                    {"Owner", "Name", "Description", "Topics", "API URL","Recent release version"},  // Meta metrics
+                    {"Age", "Last updated", "Created At", "Release count"},  // Reliability metrics
                     {"Language"},  // Portability metrics
-                    {"Wiki", "Documentation"},  // Usability metrics
-                    {"Issue count"}  // Security metrics
+                    {"Wiki", "Documentation","has_downloads"},  // Usability metrics
+                    {"Total open Issue count","Issue count By Labels","Issue count By Assignees","Issue count By Date","Issue count By Comments"}  // Security metrics
             };
 
             int currentColumn = 0;
@@ -47,21 +47,28 @@ public class ExcelServiceV1 {
             parentHeaderStyle.setAlignment(HorizontalAlignment.CENTER);
             parentHeaderStyle.setVerticalAlignment(VerticalAlignment.CENTER);
             Font parentHeaderFont = workbook.createFont();
+            parentHeaderFont.setColor(IndexedColors.WHITE.getIndex());
             parentHeaderFont.setBold(true);
             parentHeaderStyle.setFont(parentHeaderFont);
-            parentHeaderStyle.setFillForegroundColor(IndexedColors.LIGHT_BLUE.getIndex());
+            parentHeaderStyle.setFillForegroundColor(IndexedColors.RED.getIndex());
             parentHeaderStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+            parentHeaderStyle.setWrapText(true);
 
             CellStyle headerStyle = workbook.createCellStyle();
             headerStyle.setAlignment(HorizontalAlignment.CENTER);
             headerStyle.setVerticalAlignment(VerticalAlignment.CENTER);
             Font headerFont = workbook.createFont();
             headerFont.setBold(true);
+            headerFont.setColor(IndexedColors.BLACK.getIndex());
             headerStyle.setFont(headerFont);
+            headerStyle.setWrapText(true);
+            headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+            headerStyle.setFillForegroundColor(IndexedColors.CORAL.getIndex());
 
             CellStyle dataStyle = workbook.createCellStyle();
             dataStyle.setAlignment(HorizontalAlignment.CENTER);
             dataStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+            dataStyle.setWrapText(true);
 
             // Write parent headers in the first row
             Row parentHeaderRow = sheet.createRow(0);

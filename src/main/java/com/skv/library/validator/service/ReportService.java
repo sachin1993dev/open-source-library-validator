@@ -33,7 +33,6 @@ public class ReportService {
     private String getGitHubData(String url) {
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "token " + gitHubConfig.getToken());
-        headers.set("Accept", "application/vnd.github.v3+json");
 
         HttpEntity<String> entity = new HttpEntity<>(headers);
         ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
