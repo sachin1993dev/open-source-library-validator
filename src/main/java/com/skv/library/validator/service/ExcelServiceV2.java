@@ -63,7 +63,7 @@ public class ExcelServiceV2 {
                 {"Age", "Created At","Last updated","Release count"},  // Reliability metrics
                 {"Language"},  // Portability metrics
                 {"Wiki","has_downloads","Documentation"},  // Usability metrics
-                {"Total open Issue count","Issue count By Labels","Issue count By Assignees","Issue count By Date","Issue count By Comments"}  // Security metrics
+                {"Total open Issue count","Issue count By Labels","Issue count By Date","Issue count By Comments"}  // Security metrics
         };
 
         CellStyle parentHeaderStyle = workbook.createCellStyle();
@@ -92,6 +92,15 @@ public class ExcelServiceV2 {
         dataStyle.setAlignment(HorizontalAlignment.CENTER);
         dataStyle.setVerticalAlignment(VerticalAlignment.CENTER);
         //dataStyle.setWrapText(true);
+
+        CellStyle dataStyleSecurity = workbook.createCellStyle();
+        dataStyle.setAlignment(HorizontalAlignment.LEFT);
+        dataStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+
+
+        CellStyle dataStyleLeft = workbook.createCellStyle();
+        dataStyle.setAlignment(HorizontalAlignment.LEFT);
+        dataStyle.setVerticalAlignment(VerticalAlignment.CENTER);
 
         Row parentHeaderRow = sheet.createRow(0);
         Row childMetricsRow = sheet.createRow(1);
@@ -289,7 +298,7 @@ public class ExcelServiceV2 {
 
                 Cell cell29 = valueRow.createCell(27);
                 cell29.setCellValue(repository.getReadme().getContent());
-                cell29.setCellStyle(dataStyle);
+                cell29.setCellStyle(dataStyleLeft);
 
                 Cell cell31 = valueRow.createCell(29);
                 cell31.setCellValue(repository.getOpenIssueCount());
@@ -304,16 +313,16 @@ public class ExcelServiceV2 {
 
                 Cell cell32 = valueRow.createCell(30);
                 cell32.setCellValue(labelsCount.toString());
-                cell32.setCellStyle(dataStyle);
+                cell32.setCellStyle(dataStyleSecurity);
 
                 // Classify and count by assignees
-                Map<String, Long> assigneesCount = issues.stream()
+               /* Map<String, Long> assigneesCount = issues.stream()
                         .flatMap(issue -> issue.getAssignees().stream().map(assignee -> assignee.getLogin()))
                         .collect(Collectors.groupingBy(assignee -> assignee, Collectors.counting()));
 
                 Cell cell33 = valueRow.createCell(31);
                 cell33.setCellValue(assigneesCount.toString());
-                cell33.setCellStyle(dataStyle);
+                cell33.setCellStyle(dataStyleSecurity);*/
 
 
                 // Classify and count by date
@@ -330,9 +339,9 @@ public class ExcelServiceV2 {
                             return "Older than 30 days";
                         }, Collectors.counting()));
 
-                Cell cell34 = valueRow.createCell(32);
-                cell34.setCellValue(dateCount.toString());
-                cell34.setCellStyle(dataStyle);
+                Cell cell33 = valueRow.createCell(32);
+                cell33.setCellValue(dateCount.toString());
+                cell33.setCellStyle(dataStyleSecurity);
 
                 // Classify and count by comments
                 Map<String, Long> commentsCount = issues.stream()
@@ -342,9 +351,9 @@ public class ExcelServiceV2 {
                             if (comments <= 5) return "1-5 Comments";
                             return "More than 5 Comments";
                         }, Collectors.counting()));
-                Cell cell35 = valueRow.createCell(33);
-                cell35.setCellValue(commentsCount.toString());
-                cell35.setCellStyle(dataStyle);
+                Cell cell34 = valueRow.createCell(33);
+                cell34.setCellValue(commentsCount.toString());
+                cell34.setCellStyle(dataStyleSecurity);
             } catch (Exception e) {
 
             }
